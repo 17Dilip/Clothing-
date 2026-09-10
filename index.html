@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeedNest — Clothing Shopping</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green-dark:#173D30;
+    --green:#1F4D3D;
+    --green-light:#2E6B54;
+    --gold:#E0A93A;
+    --gold-soft:#F4DFAE;
+    --coral:#E8603C;
+    --bg:#F6F7F2;
+    --surface:#FFFFFF;
+    --ink:#1B211D;
+    --ink-soft:#5B6560;
+    --line:#E1E4DC;
+    --radius:16px;
+    --shadow:0 6px 20px rgba(23,61,48,0.08);
+    --shadow-hover:0 12px 28px rgba(23,61,48,0.14);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4,.display{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    letter-spacing:-0.01em;
+    margin:0;
+  }
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;cursor:pointer;border:none;}
+  input,select,textarea{font-family:inherit;}
+  ::selection{background:var(--gold-soft);}
+
+  /* ===== Header ===== */
+  header{
+    position:sticky;top:0;z-index:50;
+    background:var(--surface);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar{
+    background:var(--green-dark);color:#fff;
+    font-size:12.5px; text-align:center; padding:6px 12px;
+    letter-spacing:.02em;
+  }
+  .nav-wrap{
+    max-width:1180px;margin:0 auto;padding:14px 20px;
+    display:flex;align-items:center;gap:20px;
+  }
+  .logo{display:flex;align-items:center;gap:8px;font-size:22px;flex-shrink:0;}
+  .logo .mark{font-size:26px;}
+  .logo span{font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--green-dark);}
+  .searchbar{
+    flex:1;display:flex;align-items:center;
+    background:var(--bg);border:1px solid var(--line);
+    border-radius:999px;padding:10px 16px;gap:8px;
+    max-width:480px;
+  }
+  .searchbar input{
+    border:none;background:transparent;outline:none;
+    width:100%;font-size:14px;color:var(--ink);
+  }
+  .nav-actions{display:flex;align-items:center;gap:18px;flex-shrink:0;}
+  .nav-icon-btn{
+    display:flex;flex-direction:column;align-items:center;gap:2px;
+    font-size:11px;color:var(--ink-soft);position:relative;
+  }
+  .nav-icon-btn svg{width:22px;height:22px;stroke:var(--green-dark);}
+  .badge{
+    position:absolute;top:-6px;right:-10px;
+    background:var(--coral);color:#fff;font-size:10px;font-weight:700;
+    border-radius:999px;min-width:16px;height:16px;
+    display:flex;align-items:center;justify-content:center;padding:0 4px;
+  }
+  .dept-strip{
+    display:flex;gap:10px;padding:0 20px 14px;max-width:1180px;margin:0 auto;
+    overflow-x:auto;
+  }
+  .dept-pill{
+    flex-shrink:0;
+    display:flex;align-items:center;gap:6px;
+    background:var(--bg);border:1px solid var(--line);
+    padding:8px 16px;border-radius:999px;font-size:13.5px;font-weight:600;
+    color:var(--green-dark);transition:.15s;
+  }
+  .dept-pill:nth-child(2n){transform:translateY(3px);}
+  .dept-pill:hover, .dept-pill.active{
+    background:var(--green-dark);color:#fff;border-color:var(--green-dark);
+    transform:translateY(-2px);
+  }
+
+  /* ===== Layout ===== */
+  #app{max-width:1180px;margin:0 auto;padding:28px 20px 60px;min-height:60vh;}
+  .section-head{display:flex;justify-content:space-between;align-items:baseline;margin:36px 0 16px;}
+  .section-head h2{font-size:22px;color:var(--green-dark);}
+  .section-head .eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);font-weight:700;}
+
+  /* ===== Hero ===== */
+  .hero{
+    background:linear-gradient(120deg,var(--green-dark),var(--green) 70%);
+    border-radius:24px;color:#fff;padding:48px 40px;
+    display:flex;align-items:center;justify-content:space-between;gap:30px;
+    overflow:hidden;position:relative;
+  }
+  .hero::after{
+    content:"🪺";position:absolute;right:-10px;bottom:-40px;font-size:220px;opacity:.10;
+  }
+  .hero h1{font-size:38px;line-height:1.15;max-width:520px;position:relative;}
+  .hero p{color:#DDEAE3;margin-top:12px;font-size:15px;max-width:440px;position:relative;}
+  .hero .tag{
+    display:inline-block;background:var(--gold);color:var(--green-dark);
+    font-weight:700;font-size:12px;padding:5px 12px;border-radius:999px;margin-bottom:14px;
+  }
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:12px 22px;border-radius:999px;font-weight:600;font-size:14px;
+    transition:.15s;
+  }
+  .btn-gold{background:var(--gold);color:var(--green-dark);}
+  .btn-gold:hover{background:#eab84f;transform:translateY(-1px);}
+  .btn-outline{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.5);}
+  .btn-outline:hover{background:rgba(255,255,255,.12);}
+  .btn-primary{background:var(--green-dark);color:#fff;}
+  .btn-primary:hover{background:var(--green);}
+  .btn-primary:disabled{opacity:.5;cursor:not-allowed;}
+  .btn-ghost{background:var(--bg);color:var(--green-dark);border:1px solid var(--line);}
+  .btn-block{width:100%;justify-content:center;}
+  .hero-visual{
+    font-size:130px;flex-shrink:0;position:relative;filter:drop-shadow(0 20px 30px rgba(0,0,0,.25));
+  }
+
+  /* ===== Department cards (home) ===== */
+  .dept-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
+  .dept-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px 14px;text-align:center;transition:.18s;
+  }
+  .dept-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-3px);border-color:var(--green-light);}
+  .dept-card .emoji{font-size:32px;display:block;margin-bottom:8px;}
+  .dept-card .name{font-weight:600;font-size:14px;color:var(--green-dark);}
+
+  /* ===== Product grid ===== */
+  .product-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+  .card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;display:flex;flex-direction:column;transition:.18s;
+  }
+  .card:hover{box-shadow:var(--shadow-hover);transform:translateY(-3px);}
+  .card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:var(--bg);}
+  .card .body{padding:14px 14px 16px;display:flex;flex-direction:column;gap:6px;flex:1;}
+  .card .dept-tag{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gold);}
+  .card .name{font-size:14px;font-weight:600;line-height:1.3;min-height:36px;}
+  .card .unit{font-size:12px;color:var(--ink-soft);}
+  .card .price-row{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:8px;}
+  .card .price{font-size:16px;font-weight:700;color:var(--green-dark);}
+  .card .add-btn{
+    background:var(--green-dark);color:#fff;border-radius:999px;padding:8px 14px;font-size:12.5px;font-weight:600;
+  }
+  .card .add-btn:hover{background:var(--green);}
+  .qty-stepper{display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:999px;padding:4px 6px;}
+  .qty-stepper button{width:24px;height:24px;border-radius:50%;background:var(--surface);border:1px solid var(--line);font-weight:700;}
+  .qty-stepper span{font-weight:700;font-size:13px;min-width:14px;text-align:center;}
+
+  /* ===== Forms / auth ===== */
+  .auth-wrap{max-width:420px;margin:20px auto;background:var(--surface);border:1px solid var(--line);
+    border-radius:20px;padding:36px 32px;box-shadow:var(--shadow);}
+  .auth-wrap h2{font-size:24px;color:var(--green-dark);margin-bottom:4px;}
+  .auth-wrap .sub{color:var(--ink-soft);font-size:13.5px;margin-bottom:22px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:6px;}
+  .field input,.field select,.field textarea{
+    width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;
+    font-size:14px;outline:none;background:var(--bg);color:var(--ink);
+  }
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--green-light);background:#fff;}
+  .field-row{display:flex;gap:12px;}
+  .field-row .field{flex:1;}
+  .form-error{background:#FDECEA;color:#B3261E;font-size:13px;padding:10px 14px;border-radius:10px;margin-bottom:14px;}
+  .form-note{font-size:13px;color:var(--ink-soft);margin-top:16px;text-align:center;}
+  .form-note a{color:var(--green);font-weight:600;}
+
+  /* ===== Cart / checkout ===== */
+  .cart-layout{display:grid;grid-template-columns:1fr 340px;gap:26px;align-items:flex-start;}
+  .cart-item{
+    display:flex;gap:14px;background:var(--surface);border:1px solid var(--line);
+    border-radius:14px;padding:14px;margin-bottom:12px;align-items:center;
+  }
+  .cart-item img{width:74px;height:74px;border-radius:10px;object-fit:cover;flex-shrink:0;}
+  .cart-item .info{flex:1;}
+  .cart-item .name{font-weight:600;font-size:14.5px;}
+  .cart-item .dept-tag{font-size:11px;color:var(--gold);font-weight:700;text-transform:uppercase;}
+  .cart-item .remove{font-size:12px;color:var(--coral);font-weight:600;margin-top:6px;}
+  .summary-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;
+    position:sticky;top:110px;
+  }
+  .summary-row{display:flex;justify-content:space-between;font-size:14px;margin-bottom:10px;color:var(--ink-soft);}
+  .summary-row.total{color:var(--ink);font-weight:700;font-size:17px;border-top:1px solid var(--line);padding-top:12px;margin-top:8px;}
+  .empty-state{text-align:center;padding:60px 20px;color:var(--ink-soft);}
+  .empty-state .big{font-size:52px;margin-bottom:12px;}
+
+  .pay-option{
+    display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;
+    padding:12px 14px;margin-bottom:10px;cursor:pointer;font-size:14px;font-weight:500;
+  }
+  .pay-option.selected{border-color:var(--green-light);background:#F0F6F2;}
+
+  /* ===== Order confirmation ===== */
+  .confirm-box{text-align:center;max-width:520px;margin:20px auto;background:var(--surface);
+    border:1px solid var(--line);border-radius:20px;padding:44px 36px;box-shadow:var(--shadow);}
+  .confirm-box .check{font-size:52px;margin-bottom:10px;}
+  .receipt{text-align:left;background:var(--bg);border-radius:12px;padding:16px 18px;margin-top:22px;font-size:13.5px;}
+  .receipt .r-row{display:flex;justify-content:space-between;padding:4px 0;}
+  .order-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:12px;}
+  .order-card .top{display:flex;justify-content:space-between;font-size:13px;color:var(--ink-soft);margin-bottom:8px;}
+  .status-pill{background:#E5F3EA;color:var(--green);font-weight:700;font-size:11px;padding:3px 10px;border-radius:999px;}
+
+  /* ===== Modal / toast ===== */
+  .overlay{
+    position:fixed;inset:0;background:rgba(23,61,48,.45);display:none;
+    align-items:center;justify-content:center;z-index:200;padding:20px;
+  }
+  .overlay.active{display:flex;}
+  .modal{background:#fff;border-radius:18px;max-width:440px;width:100%;padding:28px;position:relative;max-height:85vh;overflow-y:auto;}
+  .modal .close-x{position:absolute;top:14px;right:16px;font-size:20px;color:var(--ink-soft);background:none;}
+  .toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--green-dark);color:#fff;padding:12px 22px;border-radius:999px;
+    font-size:13.5px;font-weight:600;opacity:0;transition:.25s;z-index:300;box-shadow:var(--shadow-hover);
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  footer{background:var(--green-dark);color:#cfe0d7;margin-top:60px;padding:36px 20px;font-size:13px;}
+  .footer-wrap{max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+
+  @media(max-width:900px){
+    .nav-wrap{flex-wrap:wrap;}
+    .searchbar{order:3;max-width:100%;}
+    .product-grid{grid-template-columns:repeat(2,1fr);}
+    .dept-grid{grid-template-columns:repeat(2,1fr);}
+    .hero{flex-direction:column;text-align:center;padding:36px 24px;}
+    .hero p{margin-inline:auto;}
+    .hero-visual{font-size:90px;}
+    .cart-layout{grid-template-columns:1fr;}
+    .summary-card{position:static;}
+    .field-row{flex-direction:column;gap:0;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="topbar">🇮🇳 Free delivery on orders above ₹999 &nbsp;•&nbsp; All prices inclusive of applicable GST</div>
+  <div class="nav-wrap">
+    <a href="#/home" class="logo"><span class="mark">🪺</span><span>NeedNest</span></a>
+    <div class="searchbar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5B6560" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="searchInput" placeholder="Search t-shirts, jeans, dresses, sarees…"  onkeydown="if(event.key==='Enter')doSearch()">
+    </div>
+    <div class="nav-actions">
+      <a href="#/account" class="nav-icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span id="accountLabel">Login</span>
+      </a>
+      <a href="#/cart" class="nav-icon-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <span>Cart</span>
+        <span class="badge" id="cartCount">0</span>
+      </a>
+    </div>
+  </div>
+  <div class="dept-strip" id="deptStrip"></div>
+</header>
+
+<div id="app"></div>
+
+<footer>
+  <div class="footer-wrap">
+    <div>
+      <div class="logo" style="margin-bottom:8px;"><span class="mark">🪺</span><span style="color:#fff;">NeedNest</span></div>
+      <div style="max-width:260px;color:#9fb8ac;">Clothing for every style — shop t-shirts, jeans, dresses, ethnic wear and more in one nest.</div>
+    </div>
+    <div>
+      <div style="font-weight:700;color:#fff;margin-bottom:8px;">Departments</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <a href="#/dept/clothing">Clothing</a>
+      </div>
+    </div>
+    <div>
+      <div style="font-weight:700;color:#fff;margin-bottom:8px;">Account</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <a href="#/login">Login</a><a href="#/signup">Create Account</a><a href="#/orders">My Orders</a>
+      </div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:24px;color:#7fa090;">© 2026 NeedNest. All prices shown in Indian Rupees (₹). Demo storefront.</div>
+</footer>
+
+<div class="overlay" id="emailOverlay">
+  <div class="modal">
+    <button class="close-x" onclick="closeModal()">✕</button>
+    <div id="emailModalContent"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- Supabase client library -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+<script>
+
+/* ============ SUPABASE CONFIG ============ */
+// 1. Go to your Supabase project -> Settings -> API
+// 2. Copy "Project URL" and "anon public" key and paste them below
+const SUPABASE_URL = "https://qltnwdiuqtptsgpomhhg.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_f5zUQWMJ1W2-KM58ourr5w_1nmRAxWX";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+
+/* ============ DATA ============ */
+const DEPARTMENTS = [
+  {key:'clothing', label:'Clothing', emoji:'👕'},
+];
+
+const PRODUCTS = [
+  // Clothing — T-shirt (4)
+  {id:'c1',dept:'clothing',cat:'T-shirt',name:'White Round Neck T-Shirt',unit:'All sizes',price:399,customImg:'images/White Round Neck T-Shirt.webp'},
+  {id:'c2',dept:'clothing',cat:'T-shirt',name:'Black Graphic T-Shirt',unit:'All sizes',price:449,customImg:'images/Black Graphic T-Shirt.webp'},
+  {id:'c3',dept:'clothing',cat:'T-shirt',name:'Navy Polo T-Shirt',unit:'All sizes',price:499,customImg:'images/Navy Polo T-Shirt.jpg'},
+  {id:'c4',dept:'clothing',cat:'T-shirt',name:'Striped T-Shirt',unit:'All sizes',price:429,customImg:'images/Striped T-Shirt.jpg'},
+  // Clothing — Crop top (4)
+  {id:'c5',dept:'clothing',cat:'Crop top',name:'Basic Crop Top',unit:'All sizes',price:349,customImg:'images/Basic Crop Top.jpg'},
+  {id:'c6',dept:'clothing',cat:'Crop top',name:'Ribbed Crop Top',unit:'All sizes',price:399,customImg:'images/Ribbed Crop Top.jpg'},
+  {id:'c7',dept:'clothing',cat:'Crop top',name:'Off-Shoulder Crop Top',unit:'All sizes',price:449,customImg:'images/Off-Shoulder Crop Top.jpg'},
+  {id:'c8',dept:'clothing',cat:'Crop top',name:'Printed Crop Top',unit:'All sizes',price:429,customImg:'images/Printed Crop Top.webp'},
+  // Clothing — Tank top (3)
+  {id:'c9',dept:'clothing',cat:'Tank top',name:'Cotton Tank Top',unit:'All sizes',price:299,customImg:'images/Cotton Tank Top.webp'},
+  {id:'c10',dept:'clothing',cat:'Tank top',name:'Ribbed Tank Top',unit:'All sizes',price:329,customImg:'images/Ribbed Tank Top.jpg'},
+  {id:'c11',dept:'clothing',cat:'Tank top',name:'Racerback Tank Top',unit:'All sizes',price:349,customImg:'images/Racerback Tank Top.webp'},
+  // Clothing — Hoodie (4)
+  {id:'c12',dept:'clothing',cat:'Hoodie',name:'Pullover Hoodie',unit:'Unisex',price:999,customImg:'images/Pullover Hoodie.jpg'},
+  {id:'c13',dept:'clothing',cat:'Hoodie',name:'Zip-Up Hoodie',unit:'Unisex',price:1099,customImg:'images/Zip-Up Hoodie.webp'},
+  {id:'c14',dept:'clothing',cat:'Hoodie',name:'Oversized Hoodie',unit:'Unisex',price:1199,customImg:'images/Oversized Hoodie.jpg'},
+  {id:'c15',dept:'clothing',cat:'Hoodie',name:'Fleece Hoodie',unit:'Unisex',price:1049,customImg:'images/Fleece Hoodie.jpg'},
+  // Clothing — Sweater (3)
+  {id:'c16',dept:'clothing',cat:'Sweater',name:'Wool Pullover Sweater',unit:'Unisex',price:1099,customImg:'images/Wool Pullover Sweater.jpg'},
+  {id:'c17',dept:'clothing',cat:'Sweater',name:'Cardigan Sweater',unit:'All sizes',price:1199,customImg:'images/Cardigan Sweater.jpg'},
+  {id:'c18',dept:'clothing',cat:'Sweater',name:'Turtleneck Sweater',unit:'All sizes',price:1049,customImg:'images/Turtleneck Sweater.jpg'},
+  // Clothing — Jeans (4)
+  {id:'c19',dept:'clothing',cat:'Jeans',name:'Slim Fit Jeans',unit:"Men's, blue",price:1499,customImg:'images/Slim Fit Jeans.webp'},
+  {id:'c20',dept:'clothing',cat:'Jeans',name:'Straight Fit Jeans',unit:'All sizes',price:1399,customImg:'images/Straight Fit Jeans.jpg'},
+  {id:'c21',dept:'clothing',cat:'Jeans',name:'Bootcut Jeans',unit:"Women's",price:1449,customImg:'images/Bootcut Jeans.webp'},
+  {id:'c22',dept:'clothing',cat:'Jeans',name:'Mom Fit Jeans',unit:"Women's",price:1399,customImg:'images/Mom Fit Jeans.webp'},
+  // Clothing — Shorts (3)
+  {id:'c23',dept:'clothing',cat:'Shorts',name:'Denim Shorts',unit:'All sizes',price:599,customImg:'images/Denim Shorts.jpg'},
+  {id:'c24',dept:'clothing',cat:'Shorts',name:'Cotton Casual Shorts',unit:'All sizes',price:499,customImg:'images/Cotton Casual Shorts.webp'},
+  {id:'c25',dept:'clothing',cat:'Shorts',name:'Cargo Shorts',unit:'All sizes',price:649,customImg:'images/Cargo Shorts.webp'},
+  // Clothing — Joggers (3)
+  {id:'c26',dept:'clothing',cat:'Joggers',name:'Cotton Joggers',unit:'All sizes',price:699,customImg:'images/Cotton Joggers.webp'},
+  {id:'c27',dept:'clothing',cat:'Joggers',name:'Fleece Joggers',unit:'All sizes',price:799,customImg:'images/Fleece Joggers.webp'},
+  {id:'c28',dept:'clothing',cat:'Joggers',name:'Cargo Joggers',unit:'All sizes',price:849,customImg:'images/Cargo Joggers.webp'},
+  // Clothing — Babydoll dress (3)
+  {id:'c29',dept:'clothing',cat:'Babydoll dress',name:'Floral Babydoll Dress',unit:'All sizes',price:899,customImg:'images/Floral Babydoll Dress.jpg'},
+  {id:'c30',dept:'clothing',cat:'Babydoll dress',name:'Solid Babydoll Dress',unit:'All sizes',price:799,customImg:'images/Solid Babydoll Dress.jpg'},
+  {id:'c31',dept:'clothing',cat:'Babydoll dress',name:'Lace Babydoll Dress',unit:'All sizes',price:999,customImg:'images/Lace Babydoll Dress.webp'},
+  // Clothing — Maxi dress (4)
+  {id:'c32',dept:'clothing',cat:'Maxi dress',name:'Floral Maxi Dress',unit:'All sizes',price:1199,customImg:'images/Floral Maxi Dress.webp'},
+  {id:'c33',dept:'clothing',cat:'Maxi dress',name:'Solid Maxi Dress',unit:'All sizes',price:1099,customImg:'images/Solid Maxi Dress.jpg'},
+  {id:'c34',dept:'clothing',cat:'Maxi dress',name:'Wrap Maxi Dress',unit:'All sizes',price:1249,customImg:'images/Wrap Maxi Dress.jpg'},
+  {id:'c35',dept:'clothing',cat:'Maxi dress',name:'Off-Shoulder Maxi Dress',unit:'All sizes',price:1299,customImg:'images/Off-Shoulder Maxi Dress.webp'},
+  // Clothing — Salwar Kameez (3)
+  {id:'c36',dept:'clothing',cat:'Salwar Kameez',name:'Cotton Salwar Kameez',unit:'All sizes',price:999,customImg:'images/Cotton Salwar Kameez.jpg'},
+  {id:'c37',dept:'clothing',cat:'Salwar Kameez',name:'Printed Salwar Kameez',unit:'All sizes',price:1199,customImg:'images/Printed Salwar Kameez.webp'},
+  {id:'c38',dept:'clothing',cat:'Salwar Kameez',name:'Embroidered Salwar Kameez',unit:'All sizes',price:1599,customImg:'images/Embroidered Salwar Kameez.webp'},
+  // Clothing — Lehenga Choli (3)
+  {id:'c39',dept:'clothing',cat:'Lehenga Choli',name:'Bridal Lehenga Choli',unit:'With dupatta',price:4999,customImg:'images/Bridal Lehenga Choli.webp'},
+  {id:'c40',dept:'clothing',cat:'Lehenga Choli',name:'Party Wear Lehenga Choli',unit:'With dupatta',price:2999,customImg:'images/arty Wear Lehenga Choli.webp'},
+  {id:'c41',dept:'clothing',cat:'Lehenga Choli',name:'Designer Lehenga Choli',unit:'With dupatta',price:3799,customImg:'images/Designer Lehenga Choli.webp'},
+  // Clothing — Saree (4)
+  {id:'c42',dept:'clothing',cat:'Saree',name:'Silk Saree',unit:'With blouse piece',price:2199,customImg:'images/Silk Saree.webp'},
+  {id:'c43',dept:'clothing',cat:'Saree',name:'Cotton Saree',unit:'With blouse piece',price:999,customImg:'images/Cotton Saree.webp'},
+  {id:'c44',dept:'clothing',cat:'Saree',name:'Georgette Saree',unit:'With blouse piece',price:1599,customImg:'images/Georgette Saree.webp'},
+  {id:'c45',dept:'clothing',cat:'Saree',name:'Banarasi Saree',unit:'With blouse piece',price:3499,customImg:'images/Banarasi Saree.webp'},
+];
+
+function img(product){
+  if (typeof product === 'object' && product.customImg) return product.customImg;
+  const pid = (typeof product === 'object') ? product.pid : product;
+  return `https://images.pexels.com/photos/${pid}/pexels-photo-${pid}.jpeg?auto=compress&cs=tinysrgb&w=500`;
+}
+function rupee(n){ return '₹' + n.toLocaleString('en-IN', {maximumFractionDigits:2}); }
+
+/* ============ STORAGE HELPERS (Supabase-backed) ============ */
+// These talk to a single "kv_store" table in Supabase: columns (key text primary key, value text).
+// See the setup instructions for the SQL to create this table.
+async function storeGet(key){
+  try{
+    const { data, error } = await sb.from('kv_store').select('value').eq('key', key).maybeSingle();
+    if(error){ console.error('storage get failed', error); return null; }
+    return data ? data.value : null;
+  }catch(e){ console.error('storage get failed', e); return null; }
+}
+async function storeSet(key, value){
+  try{
+    const { error } = await sb.from('kv_store').upsert({ key, value });
+    if(error) console.error('storage set failed', error);
+  }catch(e){ console.error('storage set failed', e); }
+}
+async function storeDel(key){
+  try{
+    const { error } = await sb.from('kv_store').delete().eq('key', key);
+    if(error) console.error('storage delete failed', error);
+  }catch(e){ console.error('storage delete failed', e); }
+}
+async function loadUsers(){ const v = await storeGet('users'); return v ? JSON.parse(v) : []; }
+async function saveUsers(list){ await storeSet('users', JSON.stringify(list)); }
+async function getSessionEmail(){ return await storeGet('session'); }
+async function setSessionEmail(email){ if(email) await storeSet('session', email); else await storeDel('session'); }
+async function getCart(email){ const v = await storeGet('cart:' + (email||'guest')); return v ? JSON.parse(v) : []; }
+async function saveCartFor(email, cart){ await storeSet('cart:' + (email||'guest'), JSON.stringify(cart)); }
+async function getOrders(email){ const v = await storeGet('orders:' + email); return v ? JSON.parse(v) : []; }
+async function saveOrders(email, orders){ await storeSet('orders:' + email, JSON.stringify(orders)); }
+
+/* ============ APP STATE ============ */
+let currentUser = null;   // {name,email,phone,password,address}
+let cart = [];             // [{id, qty}]
+let pendingNext = null;    // hash to go to after login
+
+/* ============ INIT ============ */
+async function init(){
+  renderDeptStrip();
+  const email = await getSessionEmail();
+  if(email){
+    const users = await loadUsers();
+    currentUser = users.find(u => u.email === email) || null;
+  }
+  cart = await getCart(currentUser ? currentUser.email : null);
+  updateHeader();
+  route();
+  window.addEventListener('hashchange', route);
+}
+
+function updateHeader(){
+  document.getElementById('accountLabel').textContent = currentUser ? currentUser.name.split(' ')[0] : 'Login';
+  document.getElementById('cartCount').textContent = cart.reduce((s,i)=>s+i.qty,0);
+}
+
+function renderDeptStrip(){
+  const strip = document.getElementById('deptStrip');
+  strip.innerHTML = DEPARTMENTS.map(d =>
+    `<a class="dept-pill" href="#/dept/${d.key}">${d.emoji} ${d.label}</a>`
+  ).join('');
+}
+
+/* ============ ROUTER ============ */
+function parseHash(){
+  const raw = location.hash.slice(1) || '/home';
+  const [path, query] = raw.split('?');
+  return { path, params: new URLSearchParams(query || '') };
+}
+
+function route(){
+  window.scrollTo(0,0);
+  const { path, params } = parseHash();
+  const app = document.getElementById('app');
+  const parts = path.split('/').filter(Boolean); // e.g. ['dept','clothing']
+
+  if(parts[0] === 'home' || parts.length === 0) return renderHome(app);
+  if(parts[0] === 'dept') return renderDeptPage(app, parts[1]);
+  if(parts[0] === 'search') return renderSearch(app, params.get('q') || '');
+  if(parts[0] === 'login') return renderLogin(app, params.get('next'));
+  if(parts[0] === 'signup') return renderSignup(app, params.get('next'));
+  if(parts[0] === 'account') return renderAccount(app);
+  if(parts[0] === 'cart') return renderCart(app);
+  if(parts[0] === 'checkout') return renderCheckout(app);
+  if(parts[0] === 'orders') return renderOrders(app);
+  if(parts[0] === 'order') return renderOrderDetail(app, params.get('id'));
+  app.innerHTML = `<div class="empty-state"><div class="big">🪹</div><h2>Page not found</h2></div>`;
+}
+
+/* ============ HOME ============ */
+function renderHome(app){
+  const featured = ['c1','c5','c12','c19','c29','c32','c39','c42'].map(id => PRODUCTS.find(p=>p.id===id));
+  app.innerHTML = `
+    <section class="hero">
+      <div>
+        <div class="tag">Clothing, all in one nest</div>
+        <h1>Clothing you love, delivered.</h1>
+        <p>Shop t-shirts, tops, hoodies, jeans, dresses and traditional wear — all your clothing needs in one place.</p>
+        <div style="margin-top:22px;display:flex;gap:12px;flex-wrap:wrap;">
+          <a href="#/dept/clothing" class="btn btn-gold">Shop Clothing</a>
+        </div>
+      </div>
+      <div class="hero-visual">🪺</div>
+    </section>
+
+    <div class="section-head"><div><div class="eyebrow">Shop by category</div><h2>Find your style</h2></div></div>
+    <div class="dept-grid">
+      ${DEPARTMENTS.map(d => `
+        <a class="dept-card" href="#/dept/${d.key}">
+          <span class="emoji">${d.emoji}</span>
+          <span class="name">${d.label}</span>
+        </a>`).join('')}
+    </div>
+
+    <div class="section-head"><div><div class="eyebrow">Handpicked</div><h2>Featured products</h2></div></div>
+    <div class="product-grid">${featured.map(productCard).join('')}</div>
+  `;
+}
+
+/* ============ DEPARTMENT PAGE ============ */
+function renderDeptPage(app, key){
+  if(key !== 'clothing'){
+    location.hash = '#/dept/clothing';
+    return;
+  }
+  const dept = DEPARTMENTS.find(d => d.key === key);
+  const list = PRODUCTS.filter(p => p.dept === key);
+  document.querySelectorAll('.dept-pill').forEach(el=>el.classList.remove('active'));
+  app.innerHTML = `
+    <div class="section-head">
+      <div><div class="eyebrow">Department</div><h2>${dept ? dept.emoji + ' ' + dept.label : 'Products'}</h2></div>
+      <div style="color:var(--ink-soft);font-size:13.5px;">${list.length} items</div>
+    </div>
+    <div class="product-grid">${list.map(productCard).join('')}</div>
+  `;
+}
+
+function renderSearch(app, q){
+  const query = q.trim().toLowerCase();
+  const results = PRODUCTS.filter(p => p.name.toLowerCase().includes(query));
+  app.innerHTML = `
+    <div class="section-head"><div><div class="eyebrow">Search results</div><h2>"${q}"</h2></div>
+      <div style="color:var(--ink-soft);font-size:13.5px;">${results.length} items</div></div>
+    ${results.length ? `<div class="product-grid">${results.map(productCard).join('')}</div>`
+      : `<div class="empty-state"><div class="big">🔍</div><h2>No products found</h2><p>Try a different search term.</p></div>`}
+  `;
+}
+
+function doSearch(){
+  const q = document.getElementById('searchInput').value;
+  location.hash = '#/search?q=' + encodeURIComponent(q);
+}
+
+function productCard(p){
+  const cartItem = cart.find(c => c.id === p.id);
+  return `
+    <div class="card">
+      <img src="${img(p)}" alt="${p.name}" loading="lazy">
+      <div class="body">
+        <div class="dept-tag">${p.dept}</div>
+        <div class="name">${p.name}</div>
+        <div class="unit">${p.unit}</div>
+        <div class="price-row">
+          <span class="price">${rupee(p.price)}</span>
+          ${cartItem
+            ? `<div class="qty-stepper">
+                 <button onclick="changeQty('${p.id}',-1)">−</button>
+                 <span>${cartItem.qty}</span>
+                 <button onclick="changeQty('${p.id}',1)">+</button>
+               </div>`
+            : `<button class="add-btn" onclick="addToCart('${p.id}')">Add to Cart</button>`}
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ============ CART LOGIC ============ */
+async function persistCart(){
+  await saveCartFor(currentUser ? currentUser.email : null, cart);
+  updateHeader();
+}
+
+function addToCart(id){
+  const existing = cart.find(c => c.id === id);
+  if(existing) existing.qty += 1; else cart.push({id, qty:1});
+  persistCart();
+  showToast('Added to cart');
+  route();
+}
+
+function changeQty(id, delta){
+  const item = cart.find(c => c.id === id);
+  if(!item) return;
+  item.qty += delta;
+  if(item.qty <= 0) cart = cart.filter(c => c.id !== id);
+  persistCart();
+  route();
+}
+
+function removeFromCart(id){
+  cart = cart.filter(c => c.id !== id);
+  persistCart();
+  route();
+}
+
+function cartTotals(){
+  const items = cart.map(c => ({...c, product: PRODUCTS.find(p=>p.id===c.id)})).filter(c=>c.product);
+  const subtotal = items.reduce((s,i)=>s + i.product.price * i.qty, 0);
+  const gst = Math.round(subtotal * 0.05);
+  const deliveryFee = subtotal === 0 ? 0 : (subtotal >= 999 ? 0 : 40);
+  const total = subtotal + gst + deliveryFee;
+  return { items, subtotal, gst, deliveryFee, total };
+}
+
+function renderCart(app){
+  const { items, subtotal, gst, deliveryFee, total } = cartTotals();
+  if(items.length === 0){
+    app.innerHTML = `<div class="empty-state"><div class="big">🛒</div><h2>Your cart is empty</h2>
+      <p>Add clothing products to see them here.</p>
+      <a href="#/home" class="btn btn-primary" style="margin-top:14px;">Start Shopping</a></div>`;
+    return;
+  }
+  app.innerHTML = `
+    <div class="section-head"><div><div class="eyebrow">Review items</div><h2>Your Cart</h2></div></div>
+    <div class="cart-layout">
+      <div>
+        ${items.map(i => `
+          <div class="cart-item">
+            <img src="${img(i.product)}" alt="${i.product.name}">
+            <div class="info">
+              <div class="dept-tag">${i.product.dept}</div>
+              <div class="name">${i.product.name}</div>
+              <div class="unit" style="color:var(--ink-soft);font-size:12px;">${i.product.unit}</div>
+              <div class="remove" onclick="removeFromCart('${i.id}')" style="cursor:pointer;">Remove</div>
+            </div>
+            <div class="qty-stepper">
+              <button onclick="changeQty('${i.id}',-1)">−</button>
+              <span>${i.qty}</span>
+              <button onclick="changeQty('${i.id}',1)">+</button>
+            </div>
+            <div style="font-weight:700;min-width:78px;text-align:right;">${rupee(i.product.price * i.qty)}</div>
+          </div>`).join('')}
+      </div>
+      <div class="summary-card">
+        <h3 style="margin-bottom:14px;">Order Summary</h3>
+        <div class="summary-row"><span>Subtotal</span><span>${rupee(subtotal)}</span></div>
+        <div class="summary-row"><span>GST (5%)</span><span>${rupee(gst)}</span></div>
+        <div class="summary-row"><span>Delivery</span><span>${deliveryFee === 0 ? 'FREE' : rupee(deliveryFee)}</span></div>
+        <div class="summary-row total"><span>Total</span><span>${rupee(total)}</span></div>
+        <button class="btn btn-primary btn-block" style="margin-top:16px;" onclick="goCheckout()">Proceed to Checkout</button>
+      </div>
+    </div>
+  `;
+}
+
+function goCheckout(){
+  if(!currentUser){
+    location.hash = '#/login?next=checkout';
+    showToast('Please login to continue');
+    return;
+  }
+  location.hash = '#/checkout';
+}
+
+/* ============ CHECKOUT ============ */
+let selectedPayment = 'UPI';
+
+function renderCheckout(app){
+  if(!currentUser){
+    app.innerHTML = `<div class="empty-state"><div class="big">🔒</div><h2>Please login to checkout</h2>
+      <a href="#/login?next=checkout" class="btn btn-primary" style="margin-top:14px;">Login</a></div>`;
+    return;
+  }
+  const { items, subtotal, gst, deliveryFee, total } = cartTotals();
+  if(items.length === 0){
+    app.innerHTML = `<div class="empty-state"><div class="big">🛒</div><h2>Your cart is empty</h2></div>`;
+    return;
+  }
+  const addr = currentUser.address || {};
+  app.innerHTML = `
+    <div class="section-head"><div><div class="eyebrow">Final step</div><h2>Checkout & Billing</h2></div></div>
+    <div class="cart-layout">
+      <div>
+        <div class="summary-card" style="position:static;margin-bottom:20px;">
+          <h3 style="margin-bottom:14px;">Shipping Address</h3>
+          <div id="checkoutFormError"></div>
+          <div class="field"><label>Full Name</label><input id="coName" value="${currentUser.name||''}"></div>
+          <div class="field"><label>Phone Number</label><input id="coPhone" value="${currentUser.phone||''}" placeholder="10-digit mobile number"></div>
+          <div class="field"><label>Address Line</label><input id="coLine" value="${addr.line||''}" placeholder="House no, street, area"></div>
+          <div class="field-row">
+            <div class="field"><label>City</label><input id="coCity" value="${addr.city||''}"></div>
+            <div class="field"><label>State</label><input id="coState" value="${addr.state||''}"></div>
+          </div>
+          <div class="field"><label>PIN Code</label><input id="coPin" value="${addr.pin||''}" placeholder="6-digit PIN"></div>
+        </div>
+        <div class="summary-card" style="position:static;">
+          <h3 style="margin-bottom:14px;">Payment Method</h3>
+          <div class="pay-option ${selectedPayment==='UPI'?'selected':''}" onclick="selectPayment('UPI')">📱 &nbsp;UPI (Google Pay / PhonePe / Paytm)</div>
+          <div class="pay-option ${selectedPayment==='Card'?'selected':''}" onclick="selectPayment('Card')">💳 &nbsp;Credit / Debit Card</div>
+          <div class="pay-option ${selectedPayment==='COD'?'selected':''}" onclick="selectPayment('COD')">💵 &nbsp;Cash on Delivery</div>
+        </div>
+      </div>
+      <div class="summary-card">
+        <h3 style="margin-bottom:14px;">Bill Details</h3>
+        <div class="summary-row"><span>Subtotal (${items.length} items)</span><span>${rupee(subtotal)}</span></div>
+        <div class="summary-row"><span>GST (5%)</span><span>${rupee(gst)}</span></div>
+        <div class="summary-row"><span>Delivery</span><span>${deliveryFee===0?'FREE':rupee(deliveryFee)}</span></div>
+        <div class="summary-row total"><span>Total Payable</span><span>${rupee(total)}</span></div>
+        <button class="btn btn-primary btn-block" style="margin-top:16px;" onclick="placeOrder()">Place Order — ${rupee(total)}</button>
+        <div style="font-size:12px;color:var(--ink-soft);margin-top:10px;text-align:center;">A confirmation & bill will be emailed to ${currentUser.email}</div>
+      </div>
+    </div>
+  `;
+}
+
+function selectPayment(method){ selectedPayment = method; renderCheckout(document.getElementById('app')); }
+
+async function placeOrder(){
+  const name = document.getElementById('coName').value.trim();
+  const phone = document.getElementById('coPhone').value.trim();
+  const line = document.getElementById('coLine').value.trim();
+  const city = document.getElementById('coCity').value.trim();
+  const state = document.getElementById('coState').value.trim();
+  const pin = document.getElementById('coPin').value.trim();
+  const errBox = document.getElementById('checkoutFormError');
+
+  if(!name || !phone || !line || !city || !state || !pin){
+    errBox.innerHTML = `<div class="form-error">Please fill in all shipping address fields.</div>`;
+    return;
+  }
+  if(!/^\d{10}$/.test(phone)){
+    errBox.innerHTML = `<div class="form-error">Enter a valid 10-digit phone number.</div>`;
+    return;
+  }
+  if(!/^\d{6}$/.test(pin)){
+    errBox.innerHTML = `<div class="form-error">Enter a valid 6-digit PIN code.</div>`;
+    return;
+  }
+
+  const { items, subtotal, gst, deliveryFee, total } = cartTotals();
+  const order = {
+    id: 'NN' + Date.now().toString().slice(-8),
+    date: new Date().toISOString(),
+    items: items.map(i => ({ id:i.id, name:i.product.name, unit:i.product.unit, price:i.product.price, qty:i.qty, pid:i.product.pid })),
+    address: { name, phone, line, city, state, pin },
+    payment: selectedPayment,
+    subtotal, gst, deliveryFee, total,
+    status: 'Confirmed'
+  };
+
+  // update stored user address/phone for convenience next time
+  currentUser.phone = phone;
+  currentUser.address = { line, city, state, pin };
+  const users = await loadUsers();
+  const idx = users.findIndex(u => u.email === currentUser.email);
+  if(idx > -1) users[idx] = currentUser;
+  await saveUsers(users);
+
+  const orders = await getOrders(currentUser.email);
+  orders.unshift(order);
+  await saveOrders(currentUser.email, orders);
+
+  cart = [];
+  await persistCart();
+
+  location.hash = '#/order?id=' + order.id;
+  setTimeout(() => sendOrderEmail(order), 400);
+}
+
+/* ============ ORDER CONFIRMATION / EMAIL SIMULATION ============ */
+function sendOrderEmail(order){
+  const html = `
+    <div style="text-align:center;">
+      <div style="font-size:34px;">📧</div>
+      <h3 style="color:var(--green-dark);margin:8px 0 2px;">Email Sent</h3>
+      <div style="color:var(--ink-soft);font-size:13.5px;">Confirmation & bill sent to <strong>${currentUser.email}</strong></div>
+    </div>
+    <div class="receipt">
+      <div style="font-weight:700;margin-bottom:6px;">NeedNest — Order Receipt</div>
+      <div class="r-row"><span>Order ID</span><span>${order.id}</span></div>
+      <div class="r-row"><span>Date</span><span>${new Date(order.date).toLocaleString('en-IN')}</span></div>
+      <div class="r-row"><span>Payment</span><span>${order.payment}</span></div>
+      <hr style="border:none;border-top:1px solid var(--line);margin:8px 0;">
+      ${order.items.map(i => `<div class="r-row"><span>${i.name} × ${i.qty}</span><span>${rupee(i.price*i.qty)}</span></div>`).join('')}
+      <hr style="border:none;border-top:1px solid var(--line);margin:8px 0;">
+      <div class="r-row"><span>Subtotal</span><span>${rupee(order.subtotal)}</span></div>
+      <div class="r-row"><span>GST (5%)</span><span>${rupee(order.gst)}</span></div>
+      <div class="r-row"><span>Delivery</span><span>${order.deliveryFee===0?'FREE':rupee(order.deliveryFee)}</span></div>
+      <div class="r-row" style="font-weight:700;"><span>Total Paid</span><span>${rupee(order.total)}</span></div>
+      <hr style="border:none;border-top:1px solid var(--line);margin:8px 0;">
+      <div style="color:var(--ink-soft);">Shipping to: ${order.address.name}, ${order.address.line}, ${order.address.city}, ${order.address.state} - ${order.address.pin}</div>
+    </div>
+    <div style="font-size:11.5px;color:var(--ink-soft);margin-top:12px;text-align:center;">
+      This is a simulated email preview inside the demo — no real email server is connected yet.
+    </div>
+  `;
+  document.getElementById('emailModalContent').innerHTML = html;
+  document.getElementById('emailOverlay').classList.add('active');
+}
+
+function closeModal(){ document.getElementById('emailOverlay').classList.remove('active'); }
+
+function renderOrderDetail(app, id){
+  if(!currentUser){ app.innerHTML = `<div class="empty-state"><div class="big">🔒</div><h2>Please login</h2></div>`; return; }
+  getOrders(currentUser.email).then(orders => {
+    const order = orders.find(o => o.id === id);
+    if(!order){ app.innerHTML = `<div class="empty-state"><div class="big">📦</div><h2>Order not found</h2></div>`; return; }
+    app.innerHTML = `
+      <div class="confirm-box">
+        <div class="check">✅</div>
+        <h2>Order Placed Successfully!</h2>
+        <p style="color:var(--ink-soft);margin-top:6px;">Thank you, ${order.address.name}. Your order <strong>${order.id}</strong> is confirmed.</p>
+        <div class="receipt">
+          <div style="font-weight:700;margin-bottom:6px;">Bill Summary</div>
+          ${order.items.map(i => `<div class="r-row"><span>${i.name} × ${i.qty}</span><span>${rupee(i.price*i.qty)}</span></div>`).join('')}
+          <hr style="border:none;border-top:1px solid var(--line);margin:8px 0;">
+          <div class="r-row"><span>Subtotal</span><span>${rupee(order.subtotal)}</span></div>
+          <div class="r-row"><span>GST (5%)</span><span>${rupee(order.gst)}</span></div>
+          <div class="r-row"><span>Delivery</span><span>${order.deliveryFee===0?'FREE':rupee(order.deliveryFee)}</span></div>
+          <div class="r-row" style="font-weight:700;"><span>Total Paid (${order.payment})</span><span>${rupee(order.total)}</span></div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:20px;">
+          <a href="#/orders" class="btn btn-ghost">View All Orders</a>
+          <a href="#/home" class="btn btn-primary">Continue Shopping</a>
+        </div>
+      </div>
+    `;
+  });
+}
+
+function renderOrders(app){
+  if(!currentUser){
+    app.innerHTML = `<div class="empty-state"><div class="big">🔒</div><h2>Login to view your orders</h2>
+      <a href="#/login?next=orders" class="btn btn-primary" style="margin-top:14px;">Login</a></div>`;
+    return;
+  }
+  getOrders(currentUser.email).then(orders => {
+    if(orders.length === 0){
+      app.innerHTML = `<div class="empty-state"><div class="big">📦</div><h2>No orders yet</h2>
+        <a href="#/home" class="btn btn-primary" style="margin-top:14px;">Start Shopping</a></div>`;
+      return;
+    }
+    app.innerHTML = `
+      <div class="section-head"><div><div class="eyebrow">Purchase history</div><h2>My Orders</h2></div></div>
+      ${orders.map(o => `
+        <a href="#/order?id=${o.id}" style="display:block;">
+          <div class="order-card">
+            <div class="top"><span>Order ${o.id} · ${new Date(o.date).toLocaleDateString('en-IN')}</span><span class="status-pill">${o.status}</span></div>
+            <div style="font-weight:600;">${o.items.map(i=>i.name).join(', ')}</div>
+            <div style="margin-top:6px;font-weight:700;color:var(--green-dark);">${rupee(o.total)}</div>
+          </div>
+        </a>`).join('')}
+    `;
+  });
+}
+
+/* ============ AUTH: LOGIN ============ */
+function renderLogin(app, next){
+  app.innerHTML = `
+    <div class="auth-wrap">
+      <h2>Welcome back</h2>
+      <div class="sub">Login to continue shopping on NeedNest</div>
+      <div id="loginError"></div>
+      <div class="field"><label>Email</label><input id="liEmail" type="email" placeholder="you@example.com"></div>
+      <div class="field"><label>Password</label><input id="liPass" type="password" placeholder="••••••••"></div>
+      <button class="btn btn-primary btn-block" onclick="doLogin('${next||''}')">Login</button>
+      <div class="form-note">New to NeedNest? <a href="#/signup${next?'?next='+next:''}">Create an account</a></div>
+    </div>
+  `;
+}
+
+async function doLogin(next){
+  const email = document.getElementById('liEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('liPass').value;
+  const errBox = document.getElementById('loginError');
+  if(!email || !pass){ errBox.innerHTML = `<div class="form-error">Enter both email and password.</div>`; return; }
+  const users = await loadUsers();
+  const user = users.find(u => u.email === email && u.password === pass);
+  if(!user){ errBox.innerHTML = `<div class="form-error">Incorrect email or password.</div>`; return; }
+  currentUser = user;
+  await setSessionEmail(user.email);
+  cart = await getCart(user.email);
+  updateHeader();
+  showToast('Logged in — welcome ' + user.name.split(' ')[0] + '!');
+  location.hash = next ? '#/' + next : '#/account';
+}
+
+/* ============ AUTH: SIGNUP ============ */
+function renderSignup(app, next){
+  app.innerHTML = `
+    <div class="auth-wrap">
+      <h2>Create your account</h2>
+      <div class="sub">Join NeedNest for faster checkout & order tracking</div>
+      <div id="signupError"></div>
+      <div class="field"><label>Full Name</label><input id="suName" placeholder="Your name"></div>
+      <div class="field"><label>Email</label><input id="suEmail" type="email" placeholder="you@example.com"></div>
+      <div class="field"><label>Phone Number</label><input id="suPhone" placeholder="10-digit mobile number"></div>
+      <div class="field-row">
+        <div class="field"><label>Password</label><input id="suPass" type="password" placeholder="Min 6 characters"></div>
+        <div class="field"><label>Confirm</label><input id="suPass2" type="password" placeholder="Re-enter password"></div>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="doSignup('${next||''}')">Create Account</button>
+      <div class="form-note">Already have an account? <a href="#/login${next?'?next='+next:''}">Login</a></div>
+    </div>
+  `;
+}
+
+async function doSignup(next){
+  const name = document.getElementById('suName').value.trim();
+  const email = document.getElementById('suEmail').value.trim().toLowerCase();
+  const phone = document.getElementById('suPhone').value.trim();
+  const pass = document.getElementById('suPass').value;
+  const pass2 = document.getElementById('suPass2').value;
+  const errBox = document.getElementById('signupError');
+
+  if(!name || !email || !phone || !pass || !pass2){
+    errBox.innerHTML = `<div class="form-error">Please fill in all fields.</div>`; return;
+  }
+  if(!/^\S+@\S+\.\S+$/.test(email)){ errBox.innerHTML = `<div class="form-error">Enter a valid email address.</div>`; return; }
+  if(!/^\d{10}$/.test(phone)){ errBox.innerHTML = `<div class="form-error">Enter a valid 10-digit phone number.</div>`; return; }
+  if(pass.length < 6){ errBox.innerHTML = `<div class="form-error">Password must be at least 6 characters.</div>`; return; }
+  if(pass !== pass2){ errBox.innerHTML = `<div class="form-error">Passwords do not match.</div>`; return; }
+
+  const users = await loadUsers();
+  if(users.some(u => u.email === email)){
+    errBox.innerHTML = `<div class="form-error">An account with this email already exists.</div>`; return;
+  }
+  const user = { name, email, phone, password: pass, address: null };
+  users.push(user);
+  await saveUsers(users);
+  currentUser = user;
+  await setSessionEmail(email);
+  cart = await getCart(email);
+  updateHeader();
+  showToast('Account created — welcome ' + name.split(' ')[0] + '!');
+  location.hash = next ? '#/' + next : '#/account';
+}
+
+/* ============ ACCOUNT ============ */
+function renderAccount(app){
+  if(!currentUser){
+    app.innerHTML = `<div class="empty-state"><div class="big">👤</div><h2>You're not logged in</h2>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:14px;">
+        <a href="#/login" class="btn btn-primary">Login</a>
+        <a href="#/signup" class="btn btn-ghost">Create Account</a>
+      </div></div>`;
+    return;
+  }
+  const addr = currentUser.address;
+  app.innerHTML = `
+    <div class="section-head"><div><div class="eyebrow">Your profile</div><h2>My Account</h2></div></div>
+    <div class="auth-wrap" style="text-align:left;">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+        <div style="width:52px;height:52px;border-radius:50%;background:var(--green-dark);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;">${currentUser.name.charAt(0).toUpperCase()}</div>
+        <div><div style="font-weight:700;font-size:16px;">${currentUser.name}</div><div style="color:var(--ink-soft);font-size:13px;">${currentUser.email}</div></div>
+      </div>
+      <div class="field"><label>Phone</label><input value="${currentUser.phone||'Not added yet'}" disabled></div>
+      <div class="field"><label>Saved Address</label><input value="${addr ? addr.line+', '+addr.city+', '+addr.state+' - '+addr.pin : 'No address saved yet'}" disabled></div>
+      <a href="#/orders" class="btn btn-ghost btn-block" style="margin-top:6px;">View My Orders</a>
+      <button class="btn btn-primary btn-block" style="margin-top:10px;background:var(--coral);" onclick="doLogout()">Logout</button>
+    </div>
+  `;
+}
+
+async function doLogout(){
+  currentUser = null;
+  await setSessionEmail(null);
+  cart = await getCart(null);
+  updateHeader();
+  showToast('Logged out');
+  location.hash = '#/home';
+}
+
+/* ============ TOAST ============ */
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2400);
+}
+
+init();
+</script>
+</body>
+</html>
